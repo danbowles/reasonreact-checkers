@@ -47,56 +47,29 @@ let make = _ => {
               let { kingStatus } = selectedPiece;
               let validSlides = adjecentSlideMoves
               // Is move on board
-              |> List.filter(((x, y)) => switch((x, y)) {
-                | (-1, _)|(_, -1) => false
-                | (x, _) when x === List.length(state.checkerBoard) => false
-                | (_, y) when y === List.length(state.checkerBoard) => false
-                | (_) => true
-              })
+              |> List.filter(Logic.isMoveOnBoard)
               // Is move in correct direction
-              |> List.filter(((x, y)) => switch((x, y, gameState, kingStatus)) {
-                | (_, y, Playing(Red), Normal) when y > selY => true
-                | (_, y, Playing(White), Normal) when y < selY => true
-                | (_, _, _, King) when y < selY => true
-                | (_) => false
-              })
+              |> List.filter(((x, y)) => Logic.isLegalMove(
+                (x, y), selX, selY, gameState, kingStatus
+              ))
               // Is move to an empty square
-              |> List.filter(((x, y)) => {
-                let id = string_of_int(x) ++ string_of_int(y);
-                let foundField = checkerBoard
-                  |> List.map((row) => row.gamePieces)
-                  |> List.flatten
-                  |> List.find((gamePiece: gamePiece) => id === gamePiece.id);
-                  
-                switch foundField.player {
-                  | Empty => true
-                  | _ => false
-                };
-              });
+              |> List.filter(((x, y)) => Logic.isLandingEmpty(
+                (x, y), checkerBoard)
+              );
 
               // single Jump only for now
               let validSingleJumps = adjacentJumpMoves
-              // TODO BUG: When there are no valid jumps, filtering fails I think
               // Is move on board
-              |> List.filter((((x, y), (lx, ly))) => switch((x, y)) {
-                | (-1, _)|(_, -1) => false
-                | (x, _) when x === List.length(state.checkerBoard) => false
-                | (_, y) when y === List.length(state.checkerBoard) => false
-                | (_) => true
-              })
+              |> List.filter((((x, y), _)) => Logic.isMoveOnBoard((x, y)))
+              // Is Landing on the board
+              |> List.filter(((_, (lx, ly))) => Logic.isMoveOnBoard((lx, ly)))
               // Is move in correct direction
-              |> List.filter((((x, y), (lx, ly))) => switch((x, y, gameState, kingStatus)) {
-                | (_, y, Playing(Red), Normal) when y > selY => true
-                | (_, y, Playing(White), Normal) when y < selY => true
-                | (_, _, _, King) when y < selY => true
-                | (_) => false
-              })
-              |> List.filter((((x, y), (lx, ly))) => {
+              |> List.filter((((x, y), _)) => Logic.isLegalMove(
+                (x, y), selX, selY, gameState, kingStatus
+              ))
+              |> List.filter((((x, y), _)) => {
                 let id = string_of_int(x) ++ string_of_int(y);
-                let foundField = checkerBoard
-                  |> List.map((row) => row.gamePieces)
-                  |> List.flatten
-                  |> List.find((gamePiece: gamePiece) => id === gamePiece.id);
+                let foundField = Logic.findFieldById(checkerBoard, id);
                   
                 switch (foundField.player, gameState) {
                   | (Red, Playing(White))
@@ -105,21 +78,10 @@ let make = _ => {
                 };
               })
               // Is landing to an empty square
-              |> List.filter((((x, y), (lx, ly))) => {
-                let id = string_of_int(lx) ++ string_of_int(ly);
-                let foundField = checkerBoard
-                  |> List.map((row) => row.gamePieces)
-                  |> List.flatten
-                  |> List.find((gamePiece: gamePiece) => id === gamePiece.id);
-                  
-                switch foundField.player {
-                  | Empty => true
-                  | _ => false
-                };
-              });
+              |> List.filter(((_, (lx, ly))) => Logic.isLandingEmpty(
+                (lx, ly), checkerBoard)
+              );
 
-              Js.log(validSingleJumps);
-    
               let updatedBoard = checkerBoard
               |> List.map((row: checkerBoardRow) => {
                 {
@@ -131,10 +93,16 @@ let make = _ => {
                     // When x and y is a match on valid adjacent moves, set state to valid move
                     // When x and y is a match on selected x and y, set game state to valid move
                     switch (fieldX, fieldY, selState, fieldState) {
-                      | (x, y, _, Default) when switch (List.find((((x, y), (lx, ly))) => lx === x && ly === y, validSingleJumps)) {
+                      | (x, y, _, Default) when switch (List.find(((_, (lx, ly))) => lx === x && ly === y, validSingleJumps)) {
                         | exception Not_found => false
                         | _ => true
-                      } => { ...field, gamePieceState: ValidMove }
+                      } => {
+                        ...field,
+                        gamePieceState: ValidJump(switch (List.find(((_, (lx, ly))) => lx === x && ly === y, validSingleJumps)) {
+                          | exception Not_found => (-1, -1)
+                          | ((x, y), _) => (x, y)
+                        }),
+                      }
                       | (x, y, _, Default) when switch (List.find(((x1, y1)) => x1 === x && y1 === y, validSlides)) {
                         | exception Not_found => false
                         | _ => true
@@ -166,6 +134,10 @@ let make = _ => {
               | _ => false
             }
           });
+        let (capX, capY) = switch gamePieceToMove.gamePieceState {
+          | ValidJump((x, y)) => (x, y)
+          | _ => (-1, -1)
+        }
         let { x: moveToX, y: moveToY } = gamePieceToMove;
         let updatedBoard = state.checkerBoard
         |> List.map((row: checkerBoardRow) => {
@@ -175,7 +147,8 @@ let make = _ => {
             |> List.map((field: gamePiece) => {
               let { x: fieldX, y: fieldY } = field;
               switch (fieldX, fieldY) {
-                | (x, y) when x === selX && y === selY => {
+                | (x, y) when
+                  (x === selX && y === selY) || (x === capX && y === capY) => {
                   ...field,
                   player: Empty,
                   gamePieceState: Default 
@@ -194,11 +167,13 @@ let make = _ => {
           }
         });
         {
-          ...state,
           checkerBoard: updatedBoard,
           gameState: switch state.gameState {
             | Playing(Red) => Playing(White)
             | Playing(White) => Playing(Red)
+            // TODO: finish this logic.  Winner captures all other players'
+            // pieces.
+            | _ => Winner(Red) 
           }
         };
       }

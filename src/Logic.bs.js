@@ -2,6 +2,7 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 
 function range(start, end_) {
   if (start >= end_) {
@@ -13,6 +14,8 @@ function range(start, end_) {
           ];
   }
 }
+
+var boardSize = range(0, 8);
 
 function getGamePiece(x, y, player) {
   return /* record */[
@@ -26,7 +29,6 @@ function getGamePiece(x, y, player) {
 }
 
 function buildBoard(param) {
-  var boardSize = range(0, 8);
   var boardRow = function (y, player) {
     return List.map((function (x) {
                   var match = x % 2;
@@ -71,11 +73,86 @@ function buildBoard(param) {
                   }), boardSize));
 }
 
+function isMoveOnBoard(param) {
+  var y = param[1];
+  var x = param[0];
+  if (x !== -1 && y !== -1 && x !== List.length(boardSize)) {
+    return y !== List.length(boardSize);
+  } else {
+    return false;
+  }
+}
+
+function findFieldById(checkerBoard, id) {
+  return List.find((function (gamePiece) {
+                return id === gamePiece[/* id */0];
+              }), List.flatten(List.map((function (row) {
+                        return row[/* gamePieces */1];
+                      }), checkerBoard)));
+}
+
+function isLegalMove(param, selX, selY, gameState, kingStatus) {
+  var y = param[1];
+  var exit = 0;
+  if (gameState.tag) {
+    exit = 1;
+  } else {
+    switch (gameState[0]) {
+      case 0 : 
+          if (kingStatus) {
+            if (Caml_obj.caml_lessthan(y, selY)) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
+            exit = 1;
+          }
+          break;
+      case 1 : 
+          if (kingStatus) {
+            if (Caml_obj.caml_greaterthan(y, selY)) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
+            exit = 1;
+          }
+          break;
+      case 2 : 
+          exit = 1;
+          break;
+      
+    }
+  }
+  if (exit === 1) {
+    if (kingStatus || !Caml_obj.caml_lessthan(y, selY)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
+}
+
+function isLandingEmpty(param, checkerBoard) {
+  var id = String(param[0]) + String(param[1]);
+  var foundField = findFieldById(checkerBoard, id);
+  var match = foundField[/* player */3];
+  return match >= 2;
+}
+
 var Logic = /* module */[
   /* range */range,
+  /* boardSize */boardSize,
   /* getGamePiece */getGamePiece,
-  /* buildBoard */buildBoard
+  /* buildBoard */buildBoard,
+  /* isMoveOnBoard */isMoveOnBoard,
+  /* findFieldById */findFieldById,
+  /* isLegalMove */isLegalMove,
+  /* isLandingEmpty */isLandingEmpty
 ];
 
 exports.Logic = Logic;
-/* No side effect */
+/* boardSize Not a pure module */

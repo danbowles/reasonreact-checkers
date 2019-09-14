@@ -55,16 +55,24 @@ function BoardField(Props) {
           /* [] */0
         ]
       ]);
+  var tmp;
+  var exit = 0;
+  if (typeof gamePieceState === "number" && gamePieceState === 0) {
+    tmp = null;
+  } else {
+    exit = 1;
+  }
+  if (exit === 1) {
+    tmp = React.createElement("div", {
+          className: Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* activeField */1]),
+          onClick: (function (param) {
+              return Curry._1(onSlideGamePiece, gamePiece);
+            })
+        });
+  }
   return React.createElement("div", {
               className: squareClassNames
-            }, typeof gamePieceState === "number" ? (
-                gamePieceState !== 0 ? React.createElement("div", {
-                        className: Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* activeField */1]),
-                        onClick: (function (param) {
-                            return Curry._1(onSlideGamePiece, gamePiece);
-                          })
-                      }) : null
-              ) : React.createElement("div", undefined, "FUCK"), gamePieceJsx);
+            }, tmp, gamePieceJsx);
 }
 
 var make = BoardField;

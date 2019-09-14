@@ -11,7 +11,7 @@ var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exception
 var Logic$ReactHooksTemplate = require("./Logic.bs.js");
 var BoardRow$ReactHooksTemplate = require("./BoardRow.bs.js");
 
-var initialState_000 = /* checkerBoard */Logic$ReactHooksTemplate.Logic[/* buildBoard */2](/* () */0);
+var initialState_000 = /* checkerBoard */Logic$ReactHooksTemplate.Logic[/* buildBoard */3](/* () */0);
 
 var initialState_001 = /* gameState : Playing */Block.__(0, [/* Red */1]);
 
@@ -46,17 +46,33 @@ function Game(Props) {
                   }), List.flatten(List.map((function (row) {
                             return row[/* gamePieces */1];
                           }), state[/* checkerBoard */0])));
-            var moveToY = gamePieceToMove[/* y */2];
-            var moveToX = gamePieceToMove[/* x */1];
             var selY = match[/* y */2];
             var selX = match[/* x */1];
+            var match$1 = gamePieceToMove[/* gamePieceState */4];
+            var match$2;
+            if (typeof match$1 === "number") {
+              match$2 = /* tuple */[
+                -1,
+                -1
+              ];
+            } else {
+              var match$3 = match$1[0];
+              match$2 = /* tuple */[
+                match$3[0],
+                match$3[1]
+              ];
+            }
+            var moveToY = gamePieceToMove[/* y */2];
+            var moveToX = gamePieceToMove[/* x */1];
+            var capY = match$2[1];
+            var capX = match$2[0];
             var updatedBoard = List.map((function (row) {
                     return /* record */[
                             /* id */row[/* id */0],
                             /* gamePieces */List.map((function (field) {
                                     var fieldY = field[/* y */2];
                                     var fieldX = field[/* x */1];
-                                    if (fieldX === selX && fieldY === selY) {
+                                    if (fieldX === selX && fieldY === selY || fieldX === capX && fieldY === capY) {
                                       return /* record */[
                                               /* id */field[/* id */0],
                                               /* x */field[/* x */1],
@@ -90,19 +106,12 @@ function Game(Props) {
                                   }), row[/* gamePieces */1])
                           ];
                   }), state[/* checkerBoard */0]);
-            var match$1 = state[/* gameState */1];
+            var match$4 = state[/* gameState */1];
             var tmp;
-            if (match$1.tag) {
-              throw [
-                    Caml_builtin_exceptions.match_failure,
-                    /* tuple */[
-                      "Game.re",
-                      199,
-                      21
-                    ]
-                  ];
+            if (match$4.tag) {
+              tmp = /* Winner */Block.__(1, [/* Red */1]);
             } else {
-              switch (match$1[0]) {
+              switch (match$4[0]) {
                 case 0 : 
                     tmp = /* Playing */Block.__(0, [/* Red */1]);
                     break;
@@ -110,14 +119,8 @@ function Game(Props) {
                     tmp = /* Playing */Block.__(0, [/* White */0]);
                     break;
                 case 2 : 
-                    throw [
-                          Caml_builtin_exceptions.match_failure,
-                          /* tuple */[
-                            "Game.re",
-                            199,
-                            21
-                          ]
-                        ];
+                    tmp = /* Winner */Block.__(1, [/* Red */1]);
+                    break;
                 
               }
             }
@@ -127,19 +130,19 @@ function Game(Props) {
                   ];
           } else {
             var selectedPiece = action[0];
-            var match$2 = selectedPiece[/* player */3];
-            var match$3 = state[/* gameState */1];
+            var match$5 = selectedPiece[/* player */3];
+            var match$6 = state[/* gameState */1];
             var exit = 0;
-            switch (match$2) {
+            switch (match$5) {
               case 0 : 
-                  if (match$3.tag || match$3[0] !== 1) {
+                  if (match$6.tag || match$6[0] !== 1) {
                     exit = 1;
                   } else {
                     return state;
                   }
                   break;
               case 1 : 
-                  if (match$3.tag || match$3[0] !== 0) {
+                  if (match$6.tag || match$6[0] !== 0) {
                     exit = 1;
                   } else {
                     return state;
@@ -236,76 +239,26 @@ function Game(Props) {
               ];
               var kingStatus = selectedPiece[/* kingStatus */5];
               var validSlides = List.filter((function (param) {
-                        var id = String(param[0]) + String(param[1]);
-                        var foundField = List.find((function (gamePiece) {
-                                return id === gamePiece[/* id */0];
-                              }), List.flatten(List.map((function (row) {
-                                        return row[/* gamePieces */1];
-                                      }), checkerBoard)));
-                        var match = foundField[/* player */3];
-                        return match >= 2;
+                        return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
+                                    param[0],
+                                    param[1]
+                                  ], checkerBoard);
                       }))(List.filter((function (param) {
-                            var y = param[1];
-                            var exit = 0;
-                            if (gameState.tag) {
-                              exit = 1;
-                            } else {
-                              switch (gameState[0]) {
-                                case 0 : 
-                                    if (kingStatus) {
-                                      return y < selY$1;
-                                    } else {
-                                      exit = 1;
-                                    }
-                                    break;
-                                case 1 : 
-                                    if (kingStatus) {
-                                      return y > selY$1;
-                                    } else {
-                                      exit = 1;
-                                    }
-                                    break;
-                                case 2 : 
-                                    exit = 1;
-                                    break;
-                                
-                              }
-                            }
-                            if (exit === 1) {
-                              if (kingStatus) {
-                                return false;
-                              } else {
-                                return y < selY$1;
-                              }
-                            }
-                            
-                          }))(List.filter((function (param) {
-                                var y = param[1];
-                                var x = param[0];
-                                if (x !== -1 && y !== -1 && x !== List.length(state[/* checkerBoard */0])) {
-                                  return y !== List.length(state[/* checkerBoard */0]);
-                                } else {
-                                  return false;
-                                }
-                              }))(adjecentSlideMoves)));
+                            return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
+                                        param[0],
+                                        param[1]
+                                      ], selX$1, selY$1, gameState, kingStatus);
+                          }))(List.filter(Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4])(adjecentSlideMoves)));
               var validSingleJumps = List.filter((function (param) {
                         var match = param[1];
-                        var id = String(match[0]) + String(match[1]);
-                        var foundField = List.find((function (gamePiece) {
-                                return id === gamePiece[/* id */0];
-                              }), List.flatten(List.map((function (row) {
-                                        return row[/* gamePieces */1];
-                                      }), checkerBoard)));
-                        var match$1 = foundField[/* player */3];
-                        return match$1 >= 2;
+                        return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
+                                    match[0],
+                                    match[1]
+                                  ], checkerBoard);
                       }))(List.filter((function (param) {
                             var match = param[0];
                             var id = String(match[0]) + String(match[1]);
-                            var foundField = List.find((function (gamePiece) {
-                                    return id === gamePiece[/* id */0];
-                                  }), List.flatten(List.map((function (row) {
-                                            return row[/* gamePieces */1];
-                                          }), checkerBoard)));
+                            var foundField = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
                             var match$1 = foundField[/* player */3];
                             switch (match$1) {
                               case 0 : 
@@ -325,51 +278,24 @@ function Game(Props) {
                               
                             }
                           }))(List.filter((function (param) {
-                                var y = param[0][1];
-                                var exit = 0;
-                                if (gameState.tag) {
-                                  exit = 1;
-                                } else {
-                                  switch (gameState[0]) {
-                                    case 0 : 
-                                        if (kingStatus) {
-                                          return y < selY$1;
-                                        } else {
-                                          exit = 1;
-                                        }
-                                        break;
-                                    case 1 : 
-                                        if (kingStatus) {
-                                          return y > selY$1;
-                                        } else {
-                                          exit = 1;
-                                        }
-                                        break;
-                                    case 2 : 
-                                        exit = 1;
-                                        break;
-                                    
-                                  }
-                                }
-                                if (exit === 1) {
-                                  if (kingStatus) {
-                                    return false;
-                                  } else {
-                                    return y < selY$1;
-                                  }
-                                }
-                                
+                                var match = param[0];
+                                return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
+                                            match[0],
+                                            match[1]
+                                          ], selX$1, selY$1, gameState, kingStatus);
                               }))(List.filter((function (param) {
-                                    var match = param[0];
-                                    var y = match[1];
-                                    var x = match[0];
-                                    if (x !== -1 && y !== -1 && x !== List.length(state[/* checkerBoard */0])) {
-                                      return y !== List.length(state[/* checkerBoard */0]);
-                                    } else {
-                                      return false;
-                                    }
-                                  }))(adjacentJumpMoves))));
-              console.log(validSingleJumps);
+                                    var match = param[1];
+                                    return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
+                                                match[0],
+                                                match[1]
+                                              ]);
+                                  }))(List.filter((function (param) {
+                                        var match = param[0];
+                                        return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
+                                                    match[0],
+                                                    match[1]
+                                                  ]);
+                                      }))(adjacentJumpMoves)))));
               var updatedBoard$1 = List.map((function (row) {
                       return /* record */[
                               /* id */row[/* id */0],
@@ -384,9 +310,8 @@ function Game(Props) {
                                         try {
                                           List.find((function (param) {
                                                   var match = param[1];
-                                                  var match$1 = param[0];
-                                                  if (match[0] === match$1[0]) {
-                                                    return match[1] === match$1[1];
+                                                  if (match[0] === fieldX) {
+                                                    return match[1] === fieldY;
                                                   } else {
                                                     return false;
                                                   }
@@ -401,16 +326,47 @@ function Game(Props) {
                                           }
                                         }
                                         if (tmp) {
+                                          var tmp$1;
+                                          var exit$2 = 0;
+                                          var val;
+                                          try {
+                                            val = List.find((function (param) {
+                                                    var match = param[1];
+                                                    if (match[0] === fieldX) {
+                                                      return match[1] === fieldY;
+                                                    } else {
+                                                      return false;
+                                                    }
+                                                  }), validSingleJumps);
+                                            exit$2 = 3;
+                                          }
+                                          catch (exn$1){
+                                            if (exn$1 === Caml_builtin_exceptions.not_found) {
+                                              tmp$1 = /* tuple */[
+                                                -1,
+                                                -1
+                                              ];
+                                            } else {
+                                              throw exn$1;
+                                            }
+                                          }
+                                          if (exit$2 === 3) {
+                                            var match = val[0];
+                                            tmp$1 = /* tuple */[
+                                              match[0],
+                                              match[1]
+                                            ];
+                                          }
                                           return /* record */[
                                                   /* id */field[/* id */0],
                                                   /* x */field[/* x */1],
                                                   /* y */field[/* y */2],
                                                   /* player */field[/* player */3],
-                                                  /* gamePieceState : ValidMove */2,
+                                                  /* gamePieceState : ValidJump */[tmp$1],
                                                   /* kingStatus */field[/* kingStatus */5]
                                                 ];
                                         } else {
-                                          var tmp$1;
+                                          var tmp$2;
                                           try {
                                             List.find((function (param) {
                                                     if (param[0] === fieldX) {
@@ -419,16 +375,16 @@ function Game(Props) {
                                                       return false;
                                                     }
                                                   }), validSlides);
-                                            tmp$1 = true;
+                                            tmp$2 = true;
                                           }
-                                          catch (exn$1){
-                                            if (exn$1 === Caml_builtin_exceptions.not_found) {
-                                              tmp$1 = false;
+                                          catch (exn$2){
+                                            if (exn$2 === Caml_builtin_exceptions.not_found) {
+                                              tmp$2 = false;
                                             } else {
-                                              throw exn$1;
+                                              throw exn$2;
                                             }
                                           }
-                                          if (tmp$1) {
+                                          if (tmp$2) {
                                             return /* record */[
                                                     /* id */field[/* id */0],
                                                     /* x */field[/* x */1],

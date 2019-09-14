@@ -39,7 +39,7 @@ let make = (~onSelectGamePiece, ~onSlideGamePiece, ~gamePiece: gamePiece) => {
   <div className=squareClassNames>
     {
       switch gamePieceState {
-        | ValidJump(_) => <div>{ReasonReact.string("FUCK")}</div>
+        | ValidJump(_)
         | Selected
         | ValidMove =>
           <div

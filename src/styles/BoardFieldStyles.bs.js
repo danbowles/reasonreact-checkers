@@ -68,8 +68,11 @@ var gamePieceStyle_000 = Css.borderRadius(Css.pct(100.0));
 var gamePieceStyle_001 = /* :: */[
   Css.height(Css.pct(100.0)),
   /* :: */[
-    Css.width(Css.pct(100.0)),
-    /* [] */0
+    Css.position(Css.relative),
+    /* :: */[
+      Css.width(Css.pct(100.0)),
+      /* [] */0
+    ]
   ]
 ];
 
@@ -87,9 +90,17 @@ var offWhite = /* :: */[
 
 var red_000 = Css.backgroundColor(Css.hex("990000"));
 
+var red_001 = /* :: */[
+  Css.after(/* :: */[
+        Css.color(Css.white),
+        /* [] */0
+      ]),
+  /* [] */0
+];
+
 var red = /* :: */[
   red_000,
-  /* [] */0
+  red_001
 ];
 
 var green_000 = Css.backgroundColor(Css.hex("638321"));
@@ -101,9 +112,17 @@ var green = /* :: */[
 
 var white_000 = Css.backgroundColor(Css.white);
 
+var white_001 = /* :: */[
+  Css.after(/* :: */[
+        Css.color(Css.black),
+        /* [] */0
+      ]),
+  /* [] */0
+];
+
 var white = /* :: */[
   white_000,
-  /* [] */0
+  white_001
 ];
 
 var BoardFieldStyles = /* module */[
