@@ -26,16 +26,6 @@ type gamePiece = {
   kingStatus,
 };
 
-type moveType =
-| Slide
-| Jump;
-
-// type boardMove = {
-//   x: int,
-//   y: int,
-//   moveType,
-// }
-
 type checkerBoardRow = {
   id: int,
   gamePieces: list(gamePiece)

@@ -7,6 +7,7 @@ var $$Array = require("bs-platform/lib/js/array.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
+var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 var Logic$ReactHooksTemplate = require("./Logic.bs.js");
 var BoardRow$ReactHooksTemplate = require("./BoardRow.bs.js");
@@ -186,57 +187,6 @@ function Game(Props) {
                 adjecentSlideMoves_000,
                 adjecentSlideMoves_001
               ];
-              var adjacentJumpMoves_000 = /* tuple */[
-                /* tuple */[
-                  selX$1 + 1 | 0,
-                  selY$1 + 1 | 0
-                ],
-                /* tuple */[
-                  selX$1 + 2 | 0,
-                  selY$1 + 2 | 0
-                ]
-              ];
-              var adjacentJumpMoves_001 = /* :: */[
-                /* tuple */[
-                  /* tuple */[
-                    selX$1 + 1 | 0,
-                    selY$1 - 1 | 0
-                  ],
-                  /* tuple */[
-                    selX$1 + 2 | 0,
-                    selY$1 - 2 | 0
-                  ]
-                ],
-                /* :: */[
-                  /* tuple */[
-                    /* tuple */[
-                      selX$1 - 1 | 0,
-                      selY$1 + 1 | 0
-                    ],
-                    /* tuple */[
-                      selX$1 - 2 | 0,
-                      selY$1 + 2 | 0
-                    ]
-                  ],
-                  /* :: */[
-                    /* tuple */[
-                      /* tuple */[
-                        selX$1 - 1 | 0,
-                        selY$1 - 1 | 0
-                      ],
-                      /* tuple */[
-                        selX$1 - 2 | 0,
-                        selY$1 - 2 | 0
-                      ]
-                    ],
-                    /* [] */0
-                  ]
-                ]
-              ];
-              var adjacentJumpMoves = /* :: */[
-                adjacentJumpMoves_000,
-                adjacentJumpMoves_001
-              ];
               var kingStatus = selectedPiece[/* kingStatus */5];
               var validSlides = List.filter((function (param) {
                         return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
@@ -249,53 +199,351 @@ function Game(Props) {
                                         param[1]
                                       ], selX$1, selY$1, gameState, kingStatus);
                           }))(List.filter(Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4])(adjecentSlideMoves)));
-              var validSingleJumps = List.filter((function (param) {
-                        var match = param[1];
-                        return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
-                                    match[0],
-                                    match[1]
-                                  ], checkerBoard);
-                      }))(List.filter((function (param) {
-                            var match = param[0];
-                            var id = String(match[0]) + String(match[1]);
-                            var foundField = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
-                            var match$1 = foundField[/* player */3];
-                            switch (match$1) {
-                              case 0 : 
-                                  if (gameState.tag) {
-                                    return false;
-                                  } else {
-                                    return gameState[0] === 1;
-                                  }
-                              case 1 : 
-                                  if (gameState.tag) {
-                                    return false;
-                                  } else {
-                                    return gameState[0] === 0;
-                                  }
-                              case 2 : 
-                                  return false;
-                              
-                            }
+              var buildJumps2 = function (_moves, _jumps, _selX, _selY, _rest) {
+                while(true) {
+                  var rest = _rest;
+                  var selY = _selY;
+                  var selX = _selX;
+                  var jumps = _jumps;
+                  var moves = _moves;
+                  var id = String(selX) + String(selY);
+                  var match = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
+                  var kingStatus = match[/* kingStatus */5];
+                  var adjacentJumpMoves_000 = /* tuple */[
+                    /* tuple */[
+                      selX + 1 | 0,
+                      selY + 1 | 0
+                    ],
+                    /* tuple */[
+                      selX + 2 | 0,
+                      selY + 2 | 0
+                    ]
+                  ];
+                  var adjacentJumpMoves_001 = /* :: */[
+                    /* tuple */[
+                      /* tuple */[
+                        selX + 1 | 0,
+                        selY - 1 | 0
+                      ],
+                      /* tuple */[
+                        selX + 2 | 0,
+                        selY - 2 | 0
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        /* tuple */[
+                          selX - 1 | 0,
+                          selY + 1 | 0
+                        ],
+                        /* tuple */[
+                          selX - 2 | 0,
+                          selY + 2 | 0
+                        ]
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          /* tuple */[
+                            selX - 1 | 0,
+                            selY - 1 | 0
+                          ],
+                          /* tuple */[
+                            selX - 2 | 0,
+                            selY - 2 | 0
+                          ]
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ];
+                  var adjacentJumpMoves = /* :: */[
+                    adjacentJumpMoves_000,
+                    adjacentJumpMoves_001
+                  ];
+                  var validLandings = List.filter((function (param) {
+                            var match = param[1];
+                            return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
+                                        match[0],
+                                        match[1]
+                                      ], checkerBoard);
                           }))(List.filter((function (param) {
                                 var match = param[0];
-                                return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
-                                            match[0],
-                                            match[1]
-                                          ], selX$1, selY$1, gameState, kingStatus);
-                              }))(List.filter((function (param) {
-                                    var match = param[1];
-                                    return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
-                                                match[0],
-                                                match[1]
-                                              ]);
-                                  }))(List.filter((function (param) {
-                                        var match = param[0];
+                                var id = String(match[0]) + String(match[1]);
+                                var foundField = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
+                                var match$1 = foundField[/* player */3];
+                                switch (match$1) {
+                                  case 0 : 
+                                      if (gameState.tag) {
+                                        return false;
+                                      } else {
+                                        return gameState[0] === 1;
+                                      }
+                                  case 1 : 
+                                      if (gameState.tag) {
+                                        return false;
+                                      } else {
+                                        return gameState[0] === 0;
+                                      }
+                                  case 2 : 
+                                      return false;
+                                  
+                                }
+                              }))(List.filter((function(selX,selY,kingStatus){
+                                return function (param) {
+                                  var match = param[0];
+                                  return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
+                                              match[0],
+                                              match[1]
+                                            ], selX, selY, gameState, kingStatus);
+                                }
+                                }(selX,selY,kingStatus)))(List.filter((function (param) {
+                                        var match = param[1];
                                         return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
                                                     match[0],
                                                     match[1]
                                                   ]);
-                                      }))(adjacentJumpMoves)))));
+                                      }))(List.filter((function (param) {
+                                            var match = param[0];
+                                            return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
+                                                        match[0],
+                                                        match[1]
+                                                      ]);
+                                          }))(adjacentJumpMoves)))));
+                  if (validLandings) {
+                    var tail = validLandings[1];
+                    var match$1 = validLandings[0];
+                    var match$2 = match$1[1];
+                    var ly = match$2[1];
+                    var lx = match$2[0];
+                    var capture = match$1[0];
+                    if (tail) {
+                      _rest = Pervasives.$at(rest, List.map((function(moves,jumps,capture){
+                              return function (param) {
+                                var match = param[1];
+                                var ly2 = match[1];
+                                var lx2 = match[0];
+                                return /* record */[
+                                        /* moves */Pervasives.$at(moves, /* :: */[
+                                              /* record */[
+                                                /* captures */Pervasives.$at(jumps, /* :: */[
+                                                      capture,
+                                                      /* [] */0
+                                                    ]),
+                                                /* landingX */lx2,
+                                                /* landingY */ly2
+                                              ],
+                                              /* [] */0
+                                            ]),
+                                        /* jumps */Pervasives.$at(jumps, /* :: */[
+                                              param[0],
+                                              /* [] */0
+                                            ]),
+                                        /* selX */lx2,
+                                        /* selY */ly2
+                                      ];
+                              }
+                              }(moves,jumps,capture)), tail));
+                      _selY = ly;
+                      _selX = lx;
+                      _jumps = Pervasives.$at(jumps, /* :: */[
+                            capture,
+                            /* [] */0
+                          ]);
+                      _moves = Pervasives.$at(moves, /* :: */[
+                            /* record */[
+                              /* captures */Pervasives.$at(jumps, /* :: */[
+                                    capture,
+                                    /* [] */0
+                                  ]),
+                              /* landingX */lx,
+                              /* landingY */ly
+                            ],
+                            /* [] */0
+                          ]);
+                      continue ;
+                    } else {
+                      _selY = ly;
+                      _selX = lx;
+                      _jumps = Pervasives.$at(jumps, /* :: */[
+                            capture,
+                            /* [] */0
+                          ]);
+                      _moves = Pervasives.$at(moves, /* :: */[
+                            /* record */[
+                              /* captures */Pervasives.$at(jumps, /* :: */[
+                                    capture,
+                                    /* [] */0
+                                  ]),
+                              /* landingX */lx,
+                              /* landingY */ly
+                            ],
+                            /* [] */0
+                          ]);
+                      continue ;
+                    }
+                  } else if (rest) {
+                    var tail$1 = rest[1];
+                    var match$3 = rest[0];
+                    var selY$1 = match$3[/* selY */3];
+                    var selX$1 = match$3[/* selX */2];
+                    var restJumps = match$3[/* jumps */1];
+                    if (tail$1) {
+                      _rest = tail$1;
+                      _selY = selY$1;
+                      _selX = selX$1;
+                      _jumps = Pervasives.$at(jumps, restJumps);
+                      _moves = Pervasives.$at(moves, match$3[/* moves */0]);
+                      continue ;
+                    } else {
+                      _rest = /* [] */0;
+                      _selY = selY$1;
+                      _selX = selX$1;
+                      _jumps = restJumps;
+                      _moves = Pervasives.$at(moves, /* :: */[
+                            /* record */[
+                              /* captures */restJumps,
+                              /* landingX */selX$1,
+                              /* landingY */selY$1
+                            ],
+                            /* [] */0
+                          ]);
+                      continue ;
+                    }
+                  } else {
+                    return moves;
+                  }
+                };
+              };
+              var buildJumps = function (_param, _validJumps, _remainingJumps) {
+                while(true) {
+                  var param = _param;
+                  var remainingJumps = _remainingJumps;
+                  var validJumps = _validJumps;
+                  var selY = param[1];
+                  var selX = param[0];
+                  var id = String(selX) + String(selY);
+                  var match = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
+                  var kingStatus = match[/* kingStatus */5];
+                  var adjacentJumpMoves_000 = /* tuple */[
+                    /* tuple */[
+                      selX + 1 | 0,
+                      selY + 1 | 0
+                    ],
+                    /* tuple */[
+                      selX + 2 | 0,
+                      selY + 2 | 0
+                    ]
+                  ];
+                  var adjacentJumpMoves_001 = /* :: */[
+                    /* tuple */[
+                      /* tuple */[
+                        selX + 1 | 0,
+                        selY - 1 | 0
+                      ],
+                      /* tuple */[
+                        selX + 2 | 0,
+                        selY - 2 | 0
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        /* tuple */[
+                          selX - 1 | 0,
+                          selY + 1 | 0
+                        ],
+                        /* tuple */[
+                          selX - 2 | 0,
+                          selY + 2 | 0
+                        ]
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          /* tuple */[
+                            selX - 1 | 0,
+                            selY - 1 | 0
+                          ],
+                          /* tuple */[
+                            selX - 2 | 0,
+                            selY - 2 | 0
+                          ]
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ];
+                  var adjacentJumpMoves = /* :: */[
+                    adjacentJumpMoves_000,
+                    adjacentJumpMoves_001
+                  ];
+                  var currentJumps = Pervasives.$at(remainingJumps, List.filter((function (param) {
+                                var match = param[1];
+                                return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
+                                            match[0],
+                                            match[1]
+                                          ], checkerBoard);
+                              }))(List.filter((function (param) {
+                                    var match = param[0];
+                                    var id = String(match[0]) + String(match[1]);
+                                    var foundField = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
+                                    var match$1 = foundField[/* player */3];
+                                    switch (match$1) {
+                                      case 0 : 
+                                          if (gameState.tag) {
+                                            return false;
+                                          } else {
+                                            return gameState[0] === 1;
+                                          }
+                                      case 1 : 
+                                          if (gameState.tag) {
+                                            return false;
+                                          } else {
+                                            return gameState[0] === 0;
+                                          }
+                                      case 2 : 
+                                          return false;
+                                      
+                                    }
+                                  }))(List.filter((function(selX,selY,kingStatus){
+                                    return function (param) {
+                                      var match = param[0];
+                                      return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
+                                                  match[0],
+                                                  match[1]
+                                                ], selX, selY, gameState, kingStatus);
+                                    }
+                                    }(selX,selY,kingStatus)))(List.filter((function (param) {
+                                            var match = param[1];
+                                            return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
+                                                        match[0],
+                                                        match[1]
+                                                      ]);
+                                          }))(List.filter((function (param) {
+                                                var match = param[0];
+                                                return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
+                                                            match[0],
+                                                            match[1]
+                                                          ]);
+                                              }))(adjacentJumpMoves))))));
+                  if (currentJumps) {
+                    var match$1 = currentJumps[0][1];
+                    _remainingJumps = currentJumps[1];
+                    _validJumps = Pervasives.$at(currentJumps, validJumps);
+                    _param = /* tuple */[
+                      match$1[0],
+                      match$1[1]
+                    ];
+                    continue ;
+                  } else {
+                    return validJumps;
+                  }
+                };
+              };
+              var validJumps = buildJumps(/* tuple */[
+                    selX$1,
+                    selY$1
+                  ], /* [] */0, /* [] */0);
+              var validJumps2 = buildJumps2(/* [] */0, /* [] */0, selX$1, selY$1, /* [] */0);
+              console.log(validJumps2);
               var updatedBoard$1 = List.map((function (row) {
                       return /* record */[
                               /* id */row[/* id */0],
@@ -315,7 +563,7 @@ function Game(Props) {
                                                   } else {
                                                     return false;
                                                   }
-                                                }), validSingleJumps);
+                                                }), validJumps);
                                           tmp = true;
                                         }
                                         catch (exn){
@@ -337,7 +585,7 @@ function Game(Props) {
                                                     } else {
                                                       return false;
                                                     }
-                                                  }), validSingleJumps);
+                                                  }), validJumps);
                                             exit$2 = 3;
                                           }
                                           catch (exn$1){
