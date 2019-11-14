@@ -1,15 +1,14 @@
+[%raw {|require('./styles/reset.css')|}]
 open Shared;
 open Logic;
-// open TestBoards;
 
 type action =
 | SelectedGamePiece(gamePiece)
-| SlideGamePiece(gamePiece);
+| SlideGamePiece(gamePiece)
+| ResetGame;
 
 let initialState: state = {
   checkerBoard: Logic.buildBoard(),
-  // checkerBoard: TestBoards.singleJump,
-  // checkerBoard: TestBoards.doubleJump,
   gameState: Playing(Red),
 };
 
@@ -63,9 +62,8 @@ let make = _ => {
                 (x, y), checkerBoard)
               );
 
-              let rec buildJumps2 = (moves, jumps, selX, selY, rest:list(remaining)) => {
-                let id = string_of_int(selX) ++ string_of_int(selY);
-                let { kingStatus } = Logic.findFieldById(checkerBoard, id);
+              let rec buildJumps = (moves, jumps, selX, selY, rest:list(remaining)) => {
+                let { kingStatus } = selectedPiece;
                 let adjacentJumpMoves = [
                   (( selX + 1, selY + 1), ( selX + 2, selY + 2)),
                   (( selX + 1, selY - 1), ( selX + 2, selY - 2)),
@@ -75,7 +73,16 @@ let make = _ => {
 
                 let validLandings = (adjacentJumpMoves
                 // Ensure we are not jumping back to the start of our jump
-                // TODO |> List.filter(((_, (lx, ly))) => lx !== jumps.sX && ly !== jumps.sY)
+                |> List.filter(((_, (lx, ly))) => {
+                  lx !== selectedPiece.x || ly !== selectedPiece.y
+                })
+                // Ensure we haven't jumped here before
+                |> List.filter((((cx, cy), _)) => {
+                  switch (jumps |> List.find(((x, y)) => x === cx && y === cy)) {
+                    | exception Not_found => true
+                    | _ => false
+                  }
+                })
                 // Is move on board
                 |> List.filter((((x, y), _)) => Logic.isMoveOnBoard((x, y)))
                 // Is Landing on the board
@@ -99,17 +106,16 @@ let make = _ => {
                   (lx, ly), checkerBoard)
                 ));
 
-                // Js.log((selX, selY));
-                // Js.log(validLandings);
+                Js.log((selX, selY, validLandings));
 
                 switch (validLandings, rest) {
                   | ([], []) => moves
-                  | ([(capture, (lx, ly))], _) => buildJumps2(
+                  | ([(capture, (lx, ly))], _) => buildJumps(
                     moves @ [{ landingX: lx, landingY: ly, captures: jumps @ [capture] }],
                     jumps @ [capture],
                     lx, ly, rest
                   )
-                  | ([(capture, (lx, ly)), ...tail], _) => buildJumps2(
+                  | ([(capture, (lx, ly)), ...tail], _) => buildJumps(
                     moves @ [{ landingX: lx, landingY: ly, captures: jumps @ [capture] }],
                     jumps @ [capture],
                     lx, ly,
@@ -122,65 +128,17 @@ let make = _ => {
                     )]
                   )
                   | ([], [{ jumps: restJumps, selX, selY }]) => {
-                    buildJumps2(
+                    buildJumps(
                       moves @ [{ landingX: selX, landingY: selY, captures: restJumps }], restJumps, selX, selY, []
                     )
                   }
-                  // | ([], [{ moves: restMoves, jumps: restJumps, selX, selY }]) => buildJumps2(
-                  //   moves @ restMoves, jumps @ restJumps, selX, selY, []
-                  // )
-                  | ([], [{ moves: restMoves, jumps: restJumps, selX, selY }, ...tail]) => buildJumps2(
+                  | ([], [{ moves: restMoves, jumps: restJumps, selX, selY }, ...tail]) => buildJumps(
                     moves @ restMoves, jumps @ restJumps, selX, selY, tail
                   )
                 }
-                // Check that we haven't landed on this square previously
-                // TODO if(0 < jumps.landings.indexOf(function(landing){return landing.x == lx && landing.y == ly;})) return;
               }
 
-              let rec buildJumps = ((selX, selY), validJumps, remainingJumps) => {
-                let id = string_of_int(selX) ++ string_of_int(selY);
-                let { kingStatus } = Logic.findFieldById(checkerBoard, id);
-                let adjacentJumpMoves = [
-                  (( selX + 1, selY + 1), ( selX + 2, selY + 2)),
-                  (( selX + 1, selY - 1), ( selX + 2, selY - 2)),
-                  (( selX - 1, selY + 1), ( selX - 2, selY + 2)),
-                  (( selX - 1, selY - 1), ( selX - 2, selY - 2)),
-                ];
-                  
-                let currentJumps = remainingJumps @ (adjacentJumpMoves
-                // Is move on board
-                |> List.filter((((x, y), _)) => Logic.isMoveOnBoard((x, y)))
-                // Is Landing on the board
-                |> List.filter(((_, (lx, ly))) => Logic.isMoveOnBoard((lx, ly)))
-                // Is move in correct direction
-                |> List.filter((((x, y), _)) => Logic.isLegalMove(
-                  (x, y), selX, selY, gameState, kingStatus
-                ))
-                |> List.filter((((x, y), _)) => {
-                  let id = string_of_int(x) ++ string_of_int(y);
-                  let foundField = Logic.findFieldById(checkerBoard, id);
-                    
-                  switch (foundField.player, gameState) {
-                    | (Red, Playing(White))
-                    | (White, Playing(Red)) => true
-                    | _ => false
-                  };
-                })
-                // Is landing to an empty square
-                |> List.filter(((_, (lx, ly))) => Logic.isLandingEmpty(
-                  (lx, ly), checkerBoard)
-                ));
-
-                switch (currentJumps) {
-                  | [] => validJumps
-                  | [(_, (lx, ly)), ...tail] => buildJumps((lx, ly), currentJumps @ validJumps, tail)
-                }
-              }
-
-              let validJumps = buildJumps((selX, selY), [], []);
-              let validJumps2 = buildJumps2([], [], selX, selY, []);
-
-              Js.log(validJumps2);
+              let validJumps2 = buildJumps([], [], selX, selY, []);
 
               let updatedBoard = checkerBoard
               |> List.map((row: checkerBoardRow) => {
@@ -189,18 +147,25 @@ let make = _ => {
                   gamePieces: row.gamePieces
                   |> List.map((field: gamePiece) => {
                     let { gamePieceState: fieldState, x: fieldX, y: fieldY } = field;
+                    let foundLanding = switch (validJumps2
+                      |> List.find(({ landingY, landingX }) =>
+                        landingX === fieldX && landingY === fieldY
+                    )) {
+                      | exception Not_found => None
+                      | landing => Some(landing)
+                    };
                     // Pattern-match on the field's x and y
                     // When x and y is a match on valid adjacent moves, set state to valid move
                     // When x and y is a match on selected x and y, set game state to valid move
                     switch (fieldX, fieldY, selState, fieldState) {
-                      | (x, y, _, Default) when switch (List.find(((_, (lx, ly))) => lx === x && ly === y, validJumps)) {
-                        | exception Not_found => false
-                        | _ => true
+                      | (_, _, _, Default) when switch foundLanding {
+                        | Some(_) => true
+                        | None => false
                       } => {
                         ...field,
-                        gamePieceState: ValidJump(switch (List.find(((_, (lx, ly))) => lx === x && ly === y, validJumps)) {
-                          | exception Not_found => (-1, -1)
-                          | ((x, y), _) => (x, y)
+                        gamePieceState: ValidJump(switch foundLanding {
+                          | Some({ captures }) => captures
+                          | None => []
                         }),
                       }
                       // TODO: if jumps, do not show slides
@@ -226,7 +191,7 @@ let make = _ => {
           }
         }
       | SlideGamePiece(gamePieceToMove: gamePiece) => {
-        let { x: selX, y: selY } = state.checkerBoard
+        let { x: selX, y: selY, kingStatus: selKingStatus } = state.checkerBoard
           |> List.map((row) => row.gamePieces)
           |> List.flatten
           |> List.find((gamePiece) => {
@@ -235,11 +200,11 @@ let make = _ => {
               | _ => false
             }
           });
-        let (capX, capY) = switch gamePieceToMove.gamePieceState {
-          | ValidJump((x, y)) => (x, y)
-          | _ => (-1, -1)
+        let captures = switch gamePieceToMove.gamePieceState {
+          | ValidJump(captures) => captures
+          | _ => []
         }
-        let { x: moveToX, y: moveToY } = gamePieceToMove;
+        let { x: moveToX, y: moveToY, kingStatus } = gamePieceToMove;
         let updatedBoard = state.checkerBoard
         |> List.map((row: checkerBoardRow) => {
           {
@@ -247,43 +212,90 @@ let make = _ => {
             gamePieces: row.gamePieces
             |> List.map((field: gamePiece) => {
               let { x: fieldX, y: fieldY } = field;
+              let foundCapture = switch (captures
+                |> List.find(((cx, cy)) =>
+                  cx === fieldX && cy === fieldY
+              )) {
+                | exception Not_found => None
+                | capture => Some(capture)
+              };
+              let captured = switch foundCapture {
+                | Some(_) => true
+                | None => false
+              };
+
               switch (fieldX, fieldY) {
                 | (x, y) when
-                  (x === selX && y === selY) || (x === capX && y === capY) => {
+                  (x === selX && y === selY) || captured => {
                   ...field,
                   player: Empty,
                   gamePieceState: Default 
                 }
                 | (x, y) when x === moveToX && y === moveToY => {
-                  ...field,
-                  player: switch state.gameState {
-                    | Playing(Red) => Red
-                    | _ => White
-                  },
-                  gamePieceState: Default 
+                    switch kingStatus {
+                      | King => Js.log("King")
+                      | _ => Js.log("Normal")
+                    };
+                    {
+                    ...field,
+                    kingStatus: switch (moveToY, state.gameState, selKingStatus) {
+                      | (_, _, King) => King
+                      | (7, Playing(Red), Normal)
+                      | (0, Playing(White), Normal) => King
+                      | _ => Normal
+                    },
+                    player: switch state.gameState {
+                      | Playing(Red) => Red
+                      | _ => White
+                    },
+                    gamePieceState: Default 
+                  }
                 }
                 | _ => { ...field, gamePieceState: Default }
               }
             })
           }
         });
+        let piecesRemaining = (player) => updatedBoard
+          |> List.map((row) => row.gamePieces)
+          |> List.flatten
+          |> List.filter((field) => player === field.player)
+          |> List.length;
+
+        Js.log(piecesRemaining(Red));
+        Js.log(piecesRemaining(White));
         {
           checkerBoard: updatedBoard,
-          gameState: switch state.gameState {
-            | Playing(Red) => Playing(White)
-            | Playing(White) => Playing(Red)
-            // TODO: finish this logic.  Winner captures all other players'
-            // pieces.
-            | _ => Winner(Red) 
+          gameState: switch (
+            piecesRemaining(Red),
+            piecesRemaining(White),
+            state.gameState
+          ) {
+            | (0, _, _) => Winner(White)
+            | (_, 0, _) => Winner(Red)
+            | (_, _, Playing(Red)) => Playing(White)
+            | (_, _, Playing(White)) => Playing(Red)
+            | (_, _, Winner(x)) => Winner(x)
+            // In theory, should never happen
+            // Here to make the warning go away :D
+            | (_, _, Playing(Empty)) => Winner(Empty)
           }
         };
       }
+      | ResetGame => {...initialState, gameState: Playing(Red) }
     },
     initialState
   );
 
+  // Styles
+  let gameMain = Css.[
+    // backgroundColor(red),
+    // maxWidth(px(900)),
+    // margin2(px(0), auto)
+  ];
+
   let { checkerBoard } = state;
-  <div>
+  <div className=Css.style(gameMain)>
     <div>
       <h3>
         {ReasonReact.string("Turn: ")}
@@ -291,10 +303,21 @@ let make = _ => {
           switch state.gameState {
             | Playing(Red) => ReasonReact.string("Red")
             | Playing(White) => ReasonReact.string("White")
-            | _ => ReasonReact.string("Someone Won!")
+            | Playing(Empty) => React.string("Draw");
+            | Winner(player) => {
+              let winner = switch player {
+                | Red => "Red"
+                | White => "White"
+                | _ => "Draw"
+              }; 
+              ReasonReact.string(winner++" Won!");
+            }
           }
         }
       </h3>
+      <button onClick=((_) => dispatch(ResetGame))>
+        {React.string("Reset")}
+      </button>
     </div>
     <div className=Css.style(gameOuter)>
       (

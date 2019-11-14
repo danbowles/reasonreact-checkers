@@ -244,7 +244,7 @@ var doubleJump_001 = /* :: */[
                         /* :: */[
                           Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 6, /* Empty */2),
                           /* :: */[
-                            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 6, /* Empty */2),
+                            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 6, /* Red */1),
                             /* :: */[
                               Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 6, /* Empty */2),
                               /* [] */0
@@ -300,9 +300,256 @@ var doubleJump = /* :: */[
   doubleJump_001
 ];
 
+var kingDoubleJumps_000 = /* record */[
+  /* id */0,
+  /* gamePieces : :: */[
+    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 0, /* Empty */2),
+    /* :: */[
+      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 0, /* Empty */2),
+      /* :: */[
+        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 0, /* Empty */2),
+        /* :: */[
+          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 0, /* Empty */2),
+          /* :: */[
+            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 0, /* Empty */2),
+            /* :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 0, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 0, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 0, /* Empty */2),
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+];
+
+var kingDoubleJumps_001 = /* :: */[
+  /* record */[
+    /* id */1,
+    /* gamePieces : :: */[
+      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 1, /* Empty */2),
+      /* :: */[
+        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 1, /* Empty */2),
+        /* :: */[
+          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 1, /* Empty */2),
+          /* :: */[
+            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 1, /* Empty */2),
+            /* :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 1, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 1, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 1, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 1, /* Empty */2),
+                    /* [] */0
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ],
+  /* :: */[
+    /* record */[
+      /* id */2,
+      /* gamePieces : :: */[
+        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 2, /* Empty */2),
+        /* :: */[
+          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 2, /* Empty */2),
+          /* :: */[
+            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 2, /* Empty */2),
+            /* :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 2, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 2, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 2, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 2, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 2, /* Empty */2),
+                      /* [] */0
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ],
+    /* :: */[
+      /* record */[
+        /* id */3,
+        /* gamePieces : :: */[
+          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 3, /* Empty */2),
+          /* :: */[
+            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 3, /* Empty */2),
+            /* :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 3, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 3, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 3, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 3, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 3, /* Empty */2),
+                      /* :: */[
+                        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 3, /* Empty */2),
+                        /* [] */0
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      /* :: */[
+        /* record */[
+          /* id */4,
+          /* gamePieces : :: */[
+            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 4, /* Empty */2),
+            /* :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 4, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 4, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 4, /* White */0),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 4, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 4, /* Empty */2),
+                      /* :: */[
+                        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 4, /* Empty */2),
+                        /* :: */[
+                          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 4, /* Empty */2),
+                          /* [] */0
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        /* :: */[
+          /* record */[
+            /* id */5,
+            /* gamePieces : :: */[
+              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 5, /* Empty */2),
+              /* :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 5, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 5, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 5, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 5, /* Empty */2),
+                      /* :: */[
+                        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 5, /* Empty */2),
+                        /* :: */[
+                          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 5, /* Empty */2),
+                          /* :: */[
+                            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 5, /* Empty */2),
+                            /* [] */0
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          /* :: */[
+            /* record */[
+              /* id */6,
+              /* gamePieces : :: */[
+                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 6, /* Empty */2),
+                /* :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 6, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 6, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 6, /* White */0),
+                      /* :: */[
+                        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 6, /* Empty */2),
+                        /* :: */[
+                          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 6, /* White */0),
+                          /* :: */[
+                            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 6, /* Empty */2),
+                            /* :: */[
+                              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 6, /* Empty */2),
+                              /* [] */0
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            /* :: */[
+              /* record */[
+                /* id */7,
+                /* gamePieces : :: */[
+                  Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](0, 7, /* Empty */2),
+                  /* :: */[
+                    Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](1, 7, /* Empty */2),
+                    /* :: */[
+                      Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](2, 7, /* Empty */2),
+                      /* :: */[
+                        Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](3, 7, /* Empty */2),
+                        /* :: */[
+                          Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](4, 7, /* Red */1),
+                          /* :: */[
+                            Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](5, 7, /* Empty */2),
+                            /* :: */[
+                              Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](6, 7, /* Empty */2),
+                              /* :: */[
+                                Logic$ReactHooksTemplate.Logic[/* getGamePiece */2](7, 7, /* Empty */2),
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              /* [] */0
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+];
+
+var kingDoubleJumps = /* :: */[
+  kingDoubleJumps_000,
+  kingDoubleJumps_001
+];
+
 var TestBoards = /* module */[
   /* singleJump */singleJump,
-  /* doubleJump */doubleJump
+  /* doubleJump */doubleJump,
+  /* kingDoubleJumps */kingDoubleJumps
 ];
 
 exports.TestBoards = TestBoards;

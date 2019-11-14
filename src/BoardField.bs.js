@@ -17,17 +17,18 @@ function BoardField(Props) {
   var rowColTuple_001 = gamePiece[/* y */2] % 2;
   var match = rowColTuple_000;
   var squareColor = match !== 0 ? (
-      match !== 1 || rowColTuple_001 !== 1 ? Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* green */6]) : Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* offWhite */4])
+      match !== 1 || rowColTuple_001 !== 1 ? Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* green */7]) : Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* offWhite */5])
     ) : (
-      rowColTuple_001 !== 0 ? Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* green */6]) : Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* offWhite */4])
+      rowColTuple_001 !== 0 ? Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* green */7]) : Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* offWhite */5])
     );
+  var kingClass = gamePiece[/* kingStatus */5] ? "" : Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* kingPiece */4]);
   var gamePieceColor;
   switch (player) {
     case 0 : 
-        gamePieceColor = Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* white */7]);
+        gamePieceColor = Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* white */8]);
         break;
     case 1 : 
-        gamePieceColor = Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* red */5]);
+        gamePieceColor = Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* red */6]);
         break;
     case 2 : 
         gamePieceColor = "";
@@ -41,7 +42,10 @@ function BoardField(Props) {
                     Css.style(BoardFieldStyles$ReactHooksTemplate.BoardFieldStyles[/* gamePieceStyle */3]),
                     /* :: */[
                       gamePieceColor,
-                      /* [] */0
+                      /* :: */[
+                        kingClass,
+                        /* [] */0
+                      ]
                     ]
                   ]),
               onClick: (function (param) {

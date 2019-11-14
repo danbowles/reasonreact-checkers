@@ -15,7 +15,7 @@ type gamePieceState =
 | Default
 | Selected
 | ValidMove
-| ValidJump((int, int));
+| ValidJump(list((int, int)));
 
 type gamePiece = {
   id: string,

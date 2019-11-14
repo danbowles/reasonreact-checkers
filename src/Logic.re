@@ -65,7 +65,7 @@ module Logic = {
     switch(x, y, gameState, kingStatus) {
       | (_, y, Playing(Red), Normal) when y > selY => true
       | (_, y, Playing(White), Normal) when y < selY => true
-      | (_, _, _, King) when y < selY => true
+      | (_, _, _, King) => true
       | (_) => false
     }
   

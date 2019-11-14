@@ -12,6 +12,8 @@ var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exception
 var Logic$ReactHooksTemplate = require("./Logic.bs.js");
 var BoardRow$ReactHooksTemplate = require("./BoardRow.bs.js");
 
+((require('./styles/reset.css')));
+
 var initialState_000 = /* checkerBoard */Logic$ReactHooksTemplate.Logic[/* buildBoard */3](/* () */0);
 
 var initialState_001 = /* gameState : Playing */Block.__(0, [/* Red */1]);
@@ -35,7 +37,12 @@ var gameOuter = /* :: */[
 
 function Game(Props) {
   var match = React.useReducer((function (state, action) {
-          if (action.tag) {
+          if (typeof action === "number") {
+            return /* record */[
+                    initialState_000,
+                    /* gameState : Playing */Block.__(0, [/* Red */1])
+                  ];
+          } else if (action.tag) {
             var gamePieceToMove = action[0];
             var match = List.find((function (gamePiece) {
                     var match = gamePiece[/* gamePieceState */4];
@@ -47,33 +54,45 @@ function Game(Props) {
                   }), List.flatten(List.map((function (row) {
                             return row[/* gamePieces */1];
                           }), state[/* checkerBoard */0])));
+            var selKingStatus = match[/* kingStatus */5];
             var selY = match[/* y */2];
             var selX = match[/* x */1];
             var match$1 = gamePieceToMove[/* gamePieceState */4];
-            var match$2;
-            if (typeof match$1 === "number") {
-              match$2 = /* tuple */[
-                -1,
-                -1
-              ];
-            } else {
-              var match$3 = match$1[0];
-              match$2 = /* tuple */[
-                match$3[0],
-                match$3[1]
-              ];
-            }
+            var captures = typeof match$1 === "number" ? /* [] */0 : match$1[0];
+            var kingStatus = gamePieceToMove[/* kingStatus */5];
             var moveToY = gamePieceToMove[/* y */2];
             var moveToX = gamePieceToMove[/* x */1];
-            var capY = match$2[1];
-            var capX = match$2[0];
             var updatedBoard = List.map((function (row) {
                     return /* record */[
                             /* id */row[/* id */0],
                             /* gamePieces */List.map((function (field) {
                                     var fieldY = field[/* y */2];
                                     var fieldX = field[/* x */1];
-                                    if (fieldX === selX && fieldY === selY || fieldX === capX && fieldY === capY) {
+                                    var foundCapture;
+                                    var exit = 0;
+                                    var capture;
+                                    try {
+                                      capture = List.find((function (param) {
+                                              if (param[0] === fieldX) {
+                                                return param[1] === fieldY;
+                                              } else {
+                                                return false;
+                                              }
+                                            }), captures);
+                                      exit = 1;
+                                    }
+                                    catch (exn){
+                                      if (exn === Caml_builtin_exceptions.not_found) {
+                                        foundCapture = undefined;
+                                      } else {
+                                        throw exn;
+                                      }
+                                    }
+                                    if (exit === 1) {
+                                      foundCapture = capture;
+                                    }
+                                    var captured = foundCapture !== undefined;
+                                    if (fieldX === selX && fieldY === selY || captured) {
                                       return /* record */[
                                               /* id */field[/* id */0],
                                               /* x */field[/* x */1],
@@ -83,16 +102,30 @@ function Game(Props) {
                                               /* kingStatus */field[/* kingStatus */5]
                                             ];
                                     } else if (fieldX === moveToX && fieldY === moveToY) {
+                                      if (kingStatus) {
+                                        console.log("Normal");
+                                      } else {
+                                        console.log("King");
+                                      }
                                       var match = state[/* gameState */1];
                                       var tmp;
                                       tmp = match.tag || match[0] !== 1 ? /* White */0 : /* Red */1;
+                                      var match$1 = state[/* gameState */1];
+                                      var tmp$1;
+                                      tmp$1 = selKingStatus ? (
+                                          moveToY !== 0 ? (
+                                              moveToY !== 7 || match$1.tag || match$1[0] !== 1 ? /* Normal */1 : /* King */0
+                                            ) : (
+                                              match$1.tag || match$1[0] !== 0 ? /* Normal */1 : /* King */0
+                                            )
+                                        ) : /* King */0;
                                       return /* record */[
                                               /* id */field[/* id */0],
                                               /* x */field[/* x */1],
                                               /* y */field[/* y */2],
                                               /* player */tmp,
                                               /* gamePieceState : Default */0,
-                                              /* kingStatus */field[/* kingStatus */5]
+                                              /* kingStatus */tmp$1
                                             ];
                                     } else {
                                       return /* record */[
@@ -107,23 +140,42 @@ function Game(Props) {
                                   }), row[/* gamePieces */1])
                           ];
                   }), state[/* checkerBoard */0]);
+            var piecesRemaining = function (player) {
+              return List.length(List.filter((function (field) {
+                                  return player === field[/* player */3];
+                                }))(List.flatten(List.map((function (row) {
+                                        return row[/* gamePieces */1];
+                                      }), updatedBoard))));
+            };
+            console.log(piecesRemaining(/* Red */1));
+            console.log(piecesRemaining(/* White */0));
+            var match$2 = piecesRemaining(/* Red */1);
+            var match$3 = piecesRemaining(/* White */0);
             var match$4 = state[/* gameState */1];
             var tmp;
-            if (match$4.tag) {
-              tmp = /* Winner */Block.__(1, [/* Red */1]);
-            } else {
-              switch (match$4[0]) {
-                case 0 : 
-                    tmp = /* Playing */Block.__(0, [/* Red */1]);
-                    break;
-                case 1 : 
-                    tmp = /* Playing */Block.__(0, [/* White */0]);
-                    break;
-                case 2 : 
-                    tmp = /* Winner */Block.__(1, [/* Red */1]);
-                    break;
-                
+            if (match$2 !== 0) {
+              if (match$3 !== 0) {
+                if (match$4.tag) {
+                  tmp = /* Winner */Block.__(1, [match$4[0]]);
+                } else {
+                  switch (match$4[0]) {
+                    case 0 : 
+                        tmp = /* Playing */Block.__(0, [/* Red */1]);
+                        break;
+                    case 1 : 
+                        tmp = /* Playing */Block.__(0, [/* White */0]);
+                        break;
+                    case 2 : 
+                        tmp = /* Winner */Block.__(1, [/* Empty */2]);
+                        break;
+                    
+                  }
+                }
+              } else {
+                tmp = /* Winner */Block.__(1, [/* Red */1]);
               }
+            } else {
+              tmp = /* Winner */Block.__(1, [/* White */0]);
             }
             return /* record */[
                     /* checkerBoard */updatedBoard,
@@ -187,7 +239,7 @@ function Game(Props) {
                 adjecentSlideMoves_000,
                 adjecentSlideMoves_001
               ];
-              var kingStatus = selectedPiece[/* kingStatus */5];
+              var kingStatus$1 = selectedPiece[/* kingStatus */5];
               var validSlides = List.filter((function (param) {
                         return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
                                     param[0],
@@ -197,18 +249,16 @@ function Game(Props) {
                             return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
                                         param[0],
                                         param[1]
-                                      ], selX$1, selY$1, gameState, kingStatus);
+                                      ], selX$1, selY$1, gameState, kingStatus$1);
                           }))(List.filter(Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4])(adjecentSlideMoves)));
-              var buildJumps2 = function (_moves, _jumps, _selX, _selY, _rest) {
+              var buildJumps = function (_moves, _jumps, _selX, _selY, _rest) {
                 while(true) {
                   var rest = _rest;
                   var selY = _selY;
                   var selX = _selX;
                   var jumps = _jumps;
                   var moves = _moves;
-                  var id = String(selX) + String(selY);
-                  var match = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
-                  var kingStatus = match[/* kingStatus */5];
+                  var kingStatus = selectedPiece[/* kingStatus */5];
                   var adjacentJumpMoves_000 = /* tuple */[
                     /* tuple */[
                       selX + 1 | 0,
@@ -308,14 +358,49 @@ function Game(Props) {
                                                         match[0],
                                                         match[1]
                                                       ]);
-                                          }))(adjacentJumpMoves)))));
+                                          }))(List.filter((function(jumps){
+                                            return function (param) {
+                                              var match = param[0];
+                                              var cy = match[1];
+                                              var cx = match[0];
+                                              try {
+                                                List.find((function (param) {
+                                                        if (param[0] === cx) {
+                                                          return param[1] === cy;
+                                                        } else {
+                                                          return false;
+                                                        }
+                                                      }), jumps);
+                                                return false;
+                                              }
+                                              catch (exn){
+                                                if (exn === Caml_builtin_exceptions.not_found) {
+                                                  return true;
+                                                } else {
+                                                  throw exn;
+                                                }
+                                              }
+                                            }
+                                            }(jumps)))(List.filter((function (param) {
+                                                    var match = param[1];
+                                                    if (match[0] !== selectedPiece[/* x */1]) {
+                                                      return true;
+                                                    } else {
+                                                      return match[1] !== selectedPiece[/* y */2];
+                                                    }
+                                                  }))(adjacentJumpMoves)))))));
+                  console.log(/* tuple */[
+                        selX,
+                        selY,
+                        validLandings
+                      ]);
                   if (validLandings) {
                     var tail = validLandings[1];
-                    var match$1 = validLandings[0];
-                    var match$2 = match$1[1];
-                    var ly = match$2[1];
-                    var lx = match$2[0];
-                    var capture = match$1[0];
+                    var match = validLandings[0];
+                    var match$1 = match[1];
+                    var ly = match$1[1];
+                    var lx = match$1[0];
+                    var capture = match[0];
                     if (tail) {
                       _rest = Pervasives.$at(rest, List.map((function(moves,jumps,capture){
                               return function (param) {
@@ -383,16 +468,16 @@ function Game(Props) {
                     }
                   } else if (rest) {
                     var tail$1 = rest[1];
-                    var match$3 = rest[0];
-                    var selY$1 = match$3[/* selY */3];
-                    var selX$1 = match$3[/* selX */2];
-                    var restJumps = match$3[/* jumps */1];
+                    var match$2 = rest[0];
+                    var selY$1 = match$2[/* selY */3];
+                    var selX$1 = match$2[/* selX */2];
+                    var restJumps = match$2[/* jumps */1];
                     if (tail$1) {
                       _rest = tail$1;
                       _selY = selY$1;
                       _selX = selX$1;
                       _jumps = Pervasives.$at(jumps, restJumps);
-                      _moves = Pervasives.$at(moves, match$3[/* moves */0]);
+                      _moves = Pervasives.$at(moves, match$2[/* moves */0]);
                       continue ;
                     } else {
                       _rest = /* [] */0;
@@ -414,136 +499,7 @@ function Game(Props) {
                   }
                 };
               };
-              var buildJumps = function (_param, _validJumps, _remainingJumps) {
-                while(true) {
-                  var param = _param;
-                  var remainingJumps = _remainingJumps;
-                  var validJumps = _validJumps;
-                  var selY = param[1];
-                  var selX = param[0];
-                  var id = String(selX) + String(selY);
-                  var match = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
-                  var kingStatus = match[/* kingStatus */5];
-                  var adjacentJumpMoves_000 = /* tuple */[
-                    /* tuple */[
-                      selX + 1 | 0,
-                      selY + 1 | 0
-                    ],
-                    /* tuple */[
-                      selX + 2 | 0,
-                      selY + 2 | 0
-                    ]
-                  ];
-                  var adjacentJumpMoves_001 = /* :: */[
-                    /* tuple */[
-                      /* tuple */[
-                        selX + 1 | 0,
-                        selY - 1 | 0
-                      ],
-                      /* tuple */[
-                        selX + 2 | 0,
-                        selY - 2 | 0
-                      ]
-                    ],
-                    /* :: */[
-                      /* tuple */[
-                        /* tuple */[
-                          selX - 1 | 0,
-                          selY + 1 | 0
-                        ],
-                        /* tuple */[
-                          selX - 2 | 0,
-                          selY + 2 | 0
-                        ]
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          /* tuple */[
-                            selX - 1 | 0,
-                            selY - 1 | 0
-                          ],
-                          /* tuple */[
-                            selX - 2 | 0,
-                            selY - 2 | 0
-                          ]
-                        ],
-                        /* [] */0
-                      ]
-                    ]
-                  ];
-                  var adjacentJumpMoves = /* :: */[
-                    adjacentJumpMoves_000,
-                    adjacentJumpMoves_001
-                  ];
-                  var currentJumps = Pervasives.$at(remainingJumps, List.filter((function (param) {
-                                var match = param[1];
-                                return Logic$ReactHooksTemplate.Logic[/* isLandingEmpty */7](/* tuple */[
-                                            match[0],
-                                            match[1]
-                                          ], checkerBoard);
-                              }))(List.filter((function (param) {
-                                    var match = param[0];
-                                    var id = String(match[0]) + String(match[1]);
-                                    var foundField = Logic$ReactHooksTemplate.Logic[/* findFieldById */5](checkerBoard, id);
-                                    var match$1 = foundField[/* player */3];
-                                    switch (match$1) {
-                                      case 0 : 
-                                          if (gameState.tag) {
-                                            return false;
-                                          } else {
-                                            return gameState[0] === 1;
-                                          }
-                                      case 1 : 
-                                          if (gameState.tag) {
-                                            return false;
-                                          } else {
-                                            return gameState[0] === 0;
-                                          }
-                                      case 2 : 
-                                          return false;
-                                      
-                                    }
-                                  }))(List.filter((function(selX,selY,kingStatus){
-                                    return function (param) {
-                                      var match = param[0];
-                                      return Logic$ReactHooksTemplate.Logic[/* isLegalMove */6](/* tuple */[
-                                                  match[0],
-                                                  match[1]
-                                                ], selX, selY, gameState, kingStatus);
-                                    }
-                                    }(selX,selY,kingStatus)))(List.filter((function (param) {
-                                            var match = param[1];
-                                            return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
-                                                        match[0],
-                                                        match[1]
-                                                      ]);
-                                          }))(List.filter((function (param) {
-                                                var match = param[0];
-                                                return Logic$ReactHooksTemplate.Logic[/* isMoveOnBoard */4](/* tuple */[
-                                                            match[0],
-                                                            match[1]
-                                                          ]);
-                                              }))(adjacentJumpMoves))))));
-                  if (currentJumps) {
-                    var match$1 = currentJumps[0][1];
-                    _remainingJumps = currentJumps[1];
-                    _validJumps = Pervasives.$at(currentJumps, validJumps);
-                    _param = /* tuple */[
-                      match$1[0],
-                      match$1[1]
-                    ];
-                    continue ;
-                  } else {
-                    return validJumps;
-                  }
-                };
-              };
-              var validJumps = buildJumps(/* tuple */[
-                    selX$1,
-                    selY$1
-                  ], /* [] */0, /* [] */0);
-              var validJumps2 = buildJumps2(/* [] */0, /* [] */0, selX$1, selY$1, /* [] */0);
-              console.log(validJumps2);
+              var validJumps2 = buildJumps(/* [] */0, /* [] */0, selX$1, selY$1, /* [] */0);
               var updatedBoard$1 = List.map((function (row) {
                       return /* record */[
                               /* id */row[/* id */0],
@@ -551,70 +507,43 @@ function Game(Props) {
                                       var fieldState = field[/* gamePieceState */4];
                                       var fieldY = field[/* y */2];
                                       var fieldX = field[/* x */1];
+                                      var foundLanding;
                                       var exit = 0;
+                                      var landing;
+                                      try {
+                                        landing = List.find((function (param) {
+                                                if (param[/* landingX */1] === fieldX) {
+                                                  return param[/* landingY */2] === fieldY;
+                                                } else {
+                                                  return false;
+                                                }
+                                              }), validJumps2);
+                                        exit = 1;
+                                      }
+                                      catch (exn){
+                                        if (exn === Caml_builtin_exceptions.not_found) {
+                                          foundLanding = undefined;
+                                        } else {
+                                          throw exn;
+                                        }
+                                      }
+                                      if (exit === 1) {
+                                        foundLanding = landing;
+                                      }
                                       var exit$1 = 0;
+                                      var exit$2 = 0;
                                       if (typeof fieldState === "number" && fieldState === 0) {
-                                        var tmp;
-                                        try {
-                                          List.find((function (param) {
-                                                  var match = param[1];
-                                                  if (match[0] === fieldX) {
-                                                    return match[1] === fieldY;
-                                                  } else {
-                                                    return false;
-                                                  }
-                                                }), validJumps);
-                                          tmp = true;
-                                        }
-                                        catch (exn){
-                                          if (exn === Caml_builtin_exceptions.not_found) {
-                                            tmp = false;
-                                          } else {
-                                            throw exn;
-                                          }
-                                        }
-                                        if (tmp) {
-                                          var tmp$1;
-                                          var exit$2 = 0;
-                                          var val;
-                                          try {
-                                            val = List.find((function (param) {
-                                                    var match = param[1];
-                                                    if (match[0] === fieldX) {
-                                                      return match[1] === fieldY;
-                                                    } else {
-                                                      return false;
-                                                    }
-                                                  }), validJumps);
-                                            exit$2 = 3;
-                                          }
-                                          catch (exn$1){
-                                            if (exn$1 === Caml_builtin_exceptions.not_found) {
-                                              tmp$1 = /* tuple */[
-                                                -1,
-                                                -1
-                                              ];
-                                            } else {
-                                              throw exn$1;
-                                            }
-                                          }
-                                          if (exit$2 === 3) {
-                                            var match = val[0];
-                                            tmp$1 = /* tuple */[
-                                              match[0],
-                                              match[1]
-                                            ];
-                                          }
+                                        if (foundLanding !== undefined) {
                                           return /* record */[
                                                   /* id */field[/* id */0],
                                                   /* x */field[/* x */1],
                                                   /* y */field[/* y */2],
                                                   /* player */field[/* player */3],
-                                                  /* gamePieceState : ValidJump */[tmp$1],
+                                                  /* gamePieceState : ValidJump */[foundLanding !== undefined ? foundLanding[/* captures */0] : /* [] */0],
                                                   /* kingStatus */field[/* kingStatus */5]
                                                 ];
                                         } else {
-                                          var tmp$2;
+                                          var tmp;
                                           try {
                                             List.find((function (param) {
                                                     if (param[0] === fieldX) {
@@ -623,16 +552,16 @@ function Game(Props) {
                                                       return false;
                                                     }
                                                   }), validSlides);
-                                            tmp$2 = true;
+                                            tmp = true;
                                           }
-                                          catch (exn$2){
-                                            if (exn$2 === Caml_builtin_exceptions.not_found) {
-                                              tmp$2 = false;
+                                          catch (exn$1){
+                                            if (exn$1 === Caml_builtin_exceptions.not_found) {
+                                              tmp = false;
                                             } else {
-                                              throw exn$2;
+                                              throw exn$1;
                                             }
                                           }
-                                          if (tmp$2) {
+                                          if (tmp) {
                                             return /* record */[
                                                     /* id */field[/* id */0],
                                                     /* x */field[/* x */1],
@@ -642,13 +571,13 @@ function Game(Props) {
                                                     /* kingStatus */field[/* kingStatus */5]
                                                   ];
                                           } else {
-                                            exit$1 = 2;
+                                            exit$2 = 2;
                                           }
                                         }
                                       } else {
-                                        exit$1 = 2;
+                                        exit$2 = 2;
                                       }
-                                      if (exit$1 === 2) {
+                                      if (exit$2 === 2) {
                                         if (typeof selState === "number" && !(selState !== 0 || !(fieldX === selX$1 && fieldY === selY$1))) {
                                           return /* record */[
                                                   /* id */field[/* id */0],
@@ -659,10 +588,10 @@ function Game(Props) {
                                                   /* kingStatus */field[/* kingStatus */5]
                                                 ];
                                         } else {
-                                          exit = 1;
+                                          exit$1 = 1;
                                         }
                                       }
-                                      if (exit === 1) {
+                                      if (exit$1 === 1) {
                                         return /* record */[
                                                 /* id */field[/* id */0],
                                                 /* x */field[/* x */1],
@@ -684,12 +613,25 @@ function Game(Props) {
             
           }
         }), initialState);
-  var state = match[0];
   var dispatch = match[1];
+  var state = match[0];
   var match$1 = state[/* gameState */1];
   var tmp;
   if (match$1.tag) {
-    tmp = "Someone Won!";
+    var winner;
+    switch (match$1[0]) {
+      case 0 : 
+          winner = "White";
+          break;
+      case 1 : 
+          winner = "Red";
+          break;
+      case 2 : 
+          winner = "Draw";
+          break;
+      
+    }
+    tmp = winner + " Won!";
   } else {
     switch (match$1[0]) {
       case 0 : 
@@ -699,12 +641,18 @@ function Game(Props) {
           tmp = "Red";
           break;
       case 2 : 
-          tmp = "Someone Won!";
+          tmp = "Draw";
           break;
       
     }
   }
-  return React.createElement("div", undefined, React.createElement("div", undefined, React.createElement("h3", undefined, "Turn: ", tmp)), React.createElement("div", {
+  return React.createElement("div", {
+              className: Css.style(/* [] */0)
+            }, React.createElement("div", undefined, React.createElement("h3", undefined, "Turn: ", tmp), React.createElement("button", {
+                      onClick: (function (param) {
+                          return Curry._1(dispatch, /* ResetGame */0);
+                        })
+                    }, "Reset")), React.createElement("div", {
                   className: Css.style(gameOuter)
                 }, $$Array.of_list(List.map((function (row) {
                             return React.createElement(BoardRow$ReactHooksTemplate.make, {
@@ -726,4 +674,4 @@ var make = Game;
 exports.initialState = initialState;
 exports.gameOuter = gameOuter;
 exports.make = make;
-/* initialState Not a pure module */
+/*  Not a pure module */

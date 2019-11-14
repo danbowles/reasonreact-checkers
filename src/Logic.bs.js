@@ -93,9 +93,12 @@ function findFieldById(checkerBoard, id) {
 
 function isLegalMove(param, selX, selY, gameState, kingStatus) {
   var y = param[1];
-  var exit = 0;
   if (gameState.tag) {
-    exit = 1;
+    if (kingStatus) {
+      return false;
+    } else {
+      return true;
+    }
   } else {
     switch (gameState[0]) {
       case 0 : 
@@ -105,10 +108,11 @@ function isLegalMove(param, selX, selY, gameState, kingStatus) {
             } else {
               return false;
             }
+          } else if (kingStatus) {
+            return false;
           } else {
-            exit = 1;
+            return true;
           }
-          break;
       case 1 : 
           if (kingStatus) {
             if (Caml_obj.caml_greaterthan(y, selY)) {
@@ -116,24 +120,20 @@ function isLegalMove(param, selX, selY, gameState, kingStatus) {
             } else {
               return false;
             }
+          } else if (kingStatus) {
+            return false;
           } else {
-            exit = 1;
+            return true;
           }
-          break;
       case 2 : 
-          exit = 1;
-          break;
+          if (kingStatus) {
+            return false;
+          } else {
+            return true;
+          }
       
     }
   }
-  if (exit === 1) {
-    if (kingStatus || !Caml_obj.caml_lessthan(y, selY)) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-  
 }
 
 function isLandingEmpty(param, checkerBoard) {

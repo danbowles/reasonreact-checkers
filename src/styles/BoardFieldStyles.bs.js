@@ -81,6 +81,34 @@ var gamePieceStyle = /* :: */[
   gamePieceStyle_001
 ];
 
+var kingPiece_000 = Css.after(/* :: */[
+      Css.contentRule("\\2654"),
+      /* :: */[
+        Css.fontSize(Css.em(1.3)),
+        /* :: */[
+          Css.height(Css.pct(100.0)),
+          /* :: */[
+            Css.fontWeight(Css.extraBold),
+            /* :: */[
+              Css.left(Css.px(4)),
+              /* :: */[
+                Css.position(Css.absolute),
+                /* :: */[
+                  Css.top(Css.px(-2)),
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+var kingPiece = /* :: */[
+  kingPiece_000,
+  /* [] */0
+];
+
 var offWhite_000 = Css.backgroundColor(Css.hex("F2E786"));
 
 var offWhite = /* :: */[
@@ -95,7 +123,16 @@ var red_001 = /* :: */[
         Css.color(Css.white),
         /* [] */0
       ]),
-  /* [] */0
+  /* :: */[
+    Css.boxShadows(/* :: */[
+          Css.boxShadow(undefined, Css.px(2), Css.px(0), undefined, undefined, Css.hex("660000")),
+          /* :: */[
+            Css.boxShadow(undefined, Css.px(3), Css.px(5), undefined, undefined, Css.rgba(0, 0, 0, 0.3)),
+            /* [] */0
+          ]
+        ]),
+    /* [] */0
+  ]
 ];
 
 var red = /* :: */[
@@ -114,10 +151,19 @@ var white_000 = Css.backgroundColor(Css.white);
 
 var white_001 = /* :: */[
   Css.after(/* :: */[
-        Css.color(Css.black),
+        Css.color(Css.hex("222222")),
         /* [] */0
       ]),
-  /* [] */0
+  /* :: */[
+    Css.boxShadows(/* :: */[
+          Css.boxShadow(undefined, Css.px(2), Css.px(0), undefined, undefined, Css.hex("cccccc")),
+          /* :: */[
+            Css.boxShadow(undefined, Css.px(3), Css.px(5), undefined, undefined, Css.rgba(0, 0, 0, 0.3)),
+            /* [] */0
+          ]
+        ]),
+    /* [] */0
+  ]
 ];
 
 var white = /* :: */[
@@ -130,6 +176,7 @@ var BoardFieldStyles = /* module */[
   /* activeField */activeField,
   /* gamePieceWrapper */gamePieceWrapper,
   /* gamePieceStyle */gamePieceStyle,
+  /* kingPiece */kingPiece,
   /* offWhite */offWhite,
   /* red */red,
   /* green */green,

@@ -1,5 +1,5 @@
 module BoardFieldStyles = {
-  let square = Css.[
+let square = Css.[
   color(white),
   display(flexBox),
   height(px(50)),
@@ -26,30 +26,19 @@ let gamePieceStyle = Css.[
   height(pct(100.0)),
   position(relative),
   width(pct(100.0)),
-  // after([
-  //   contentRule("\\2654"),
-  //   fontSize(em(1.3)),
-  //   height(pct(100.0)),
-  //   fontWeight(extraBold),
-  //   left(px(4)),
-  //   position(absolute),
-  //   top(px(-2)),
-  // ])
 ];
 
-// <style>
-// .css-avmwmv::after {
-//     content: "\2654";
-//     position: absolute;
-//     height: 100%;
-//     width: 100%;
-//     display: block;
-//     text-align: center;
-//     top: 0;
-//     font-weight: 700;
-//     font-size: 1.2em;
-//     color: rgba(255,255,255,0.6);
-//     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.8);
+  let kingPiece = Css.[
+    after([
+      contentRule("\\2654"),
+      fontSize(em(1.3)),
+      height(pct(100.0)),
+      fontWeight(extraBold),
+      left(px(4)),
+      position(absolute),
+      top(px(-2)),
+    ])
+];
 
 let offWhite = Css.[
   backgroundColor(hex("F2E786"))
@@ -58,7 +47,11 @@ let offWhite = Css.[
 let red = Css.[
   backgroundColor(hex("990000")),
   after([
-    color(white)
+    color(white),
+    ]),
+  boxShadows([
+    boxShadow(~y=px(2), ~blur=px(0), hex("660000")),
+    boxShadow(~y=px(3), ~blur=px(5), rgba(0, 0, 0, 0.3)),
   ]),
 ];
 
@@ -69,7 +62,11 @@ let green = Css.[
 let white = Css.[
   backgroundColor(white),
   after([
-    color(black)
+    color(hex("222222")),
+  ]),
+  boxShadows([
+    boxShadow(~y=px(2), ~blur=px(0), hex("cccccc")),
+    boxShadow(~y=px(3), ~blur=px(5), rgba(0, 0, 0, 0.3)),
   ]),
 ];
 };
